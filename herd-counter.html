@@ -79,11 +79,7 @@ function isInfected(x,y) {
 }
 
 function infect(x,y) {
-	var startX,startY,endX,endY,chance,currentcount;
-
-    currentcount = parseInt(myCell.innerHTML);
-    currentcount++;
-    myCell.innerHTML = currentcount+'';
+	var startX,startY,endX,endY,chance,currentcell,currentcount;
 
     myCell = document.getElementById("cell"+y+"-"+x)
     myCell.style.color = "black";
@@ -102,6 +98,11 @@ function infect(x,y) {
             if(!isInfected(ix,iy)) {
                 if(isVaccinated(ix,iy)) chance = vacInfectionRate
                     else chance = infectionRate;
+                //
+                currentcell = 'cell'+iy+'-'+ix
+                currentcount = parseInt(document.getElementById(currentcell).innerHTML)
+                currentcount++
+                document.getElementById(currentcell).innerHTML = currentcount+''
                 if(chance>Math.random()) setTimeout('infect('+ix+','+iy+')',500+(1000*Math.random())); //The recursive bit
                 
             }
