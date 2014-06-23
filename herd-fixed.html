@@ -79,33 +79,33 @@ function isInfected(x,y) {
 }
 
 function infect(x,y) {
-	var startX,startY,endX,endY,chance,currentcell,currentcount;
+	var startX,startY,endX,endY,chance,currentcount;
 
+    // At this point we're just exposed to the infectious agent
+    currentcount = parseInt(myCell.innerHTML);
+    currentcount++;
+    myCell.innerHTML = currentcount+'';
     if(!isInfected(x,y)) {
-        myCell = document.getElementById("cell"+y+"-"+x)
-        myCell.style.color = "black";
+        if(isVaccinated(x,y)) chance = vacInfectionRate
+            else chance = infectionRate;
         
-        if(y==0) startY=0
-            else startY = parseInt(y) - 1;
-        if(x==0) startX=0
-            else startX = parseInt(x) - 1;
-        if(y==9) endY=9
-            else endY = parseInt(y) + 1;
-        if(x==39) endX=39
-            else endX = parseInt(x) + 1;
+        if(chance>Math.random()) {
+            // The infection got us, so we should try to spread it
+            myCell = document.getElementById("cell"+y+"-"+x);
+            myCell.style.color = "black";
+            
+            if(y==0) startY=0
+                else startY = parseInt(y) - 1;
+            if(x==0) startX=0
+                else startX = parseInt(x) - 1;
+            if(y==9) endY=9
+                else endY = parseInt(y) + 1;
+            if(x==39) endX=39
+                else endX = parseInt(x) + 1;
 
-        for(ix=startX;ix<=endX;ix++) {
-            for(iy=startY;iy<=endY;iy++) {
-                if(!isInfected(ix,iy)) {
-                    if(isVaccinated(ix,iy)) chance = vacInfectionRate
-                        else chance = infectionRate;
-                    //
-                    currentcell = 'cell'+iy+'-'+ix
-                    currentcount = parseInt(document.getElementById(currentcell).innerHTML)
-                    currentcount++
-                    document.getElementById(currentcell).innerHTML = currentcount+''
-                    if(chance>Math.random()) setTimeout('infect('+ix+','+iy+')',500+(1000*Math.random())); //The recursive bit
-                    
+            for(ix=startX;ix<=endX;ix++) {
+                for(iy=startY;iy<=endY;iy++) {
+                    if (x!=ix || y!=iy) setTimeout('infect('+ix+','+iy+')',500+(1000*Math.random())); //The recursive bit
                 }
             }
         }
@@ -555,8 +555,8 @@ a {
   	<td colspan="40" style="text-align: center;"><div style="color: #CCC;">Left side coverage: <input type="text" width="3" id="Left" value=".9" onchange="populate();"> Right side coverage: <input type="text" width="3" id="Right" value=".9" onchange="populate()"> <input type="submit" value="Repopulate" onclick="populate()"></div></td>
   </tr>
 </tbody></table>
-<p style="text-align: center; color: #CCC;">Robert Webb has added features to and updated this simulation. You can find his version <a href="http://www.software3d.com/Home/Vax/Immunity.php" target="_blank">here</a>.</p><p style="text-align: center; color: #CCC;">
-This version was modified by ramk13 to fix a bug in the infect() function. It shows the number of times that infect() was called on each cell.</p><p style="text-align: center; font-weight: bold; font-size: 24px; color: #CCC;">How to use this page:<br>
+<p style="text-align: center; color: #CCC;">Robert Webb has added features to and updated this simulation. You can find his version <a href="http://www.software3d.com/Home/Vax/Immunity.php" target="_blank">here</a>.</p>
+<p style="text-align: center; color: #CCC;">This version was modified by ramk13 to fix a bug in the infect() function. It shows the number of times that infect() was called on each cell.</p><p style="text-align: center; font-weight: bold; font-size: 24px; color: #CCC;">How to use this page:<br>
   <object width="640" height="385">
     <param name="movie" value="http://www.youtube.com/v/f-cKzzPkz2o?fs=1&amp;hl=en_US&amp;rel=0">
     <param name="allowFullScreen" value="true">
