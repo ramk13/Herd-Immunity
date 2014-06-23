@@ -1,0 +1,566 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0042)http://www.shanekillian.org/apps/herd.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Herd Immunity</title>
+<script type="text/javascript">
+
+// Herd Immunity Simulator
+// Written by Shane Killian
+//
+// License: Creative Commons-Attribution-ShareAlike
+// See: http://creativecommons.org/licenses/by-sa/3.0/
+// Please attribute Shane Killian as the original author in copies and
+// derivative works, with a link to http://www.shanekillian.org/
+
+// Modified by ramk13
+// Adds a counter for each time infect is called on a cell
+
+
+var infectionRate = .9;		//90% chance of infection if not vaccinated
+var vacInfectionRate = .1;	//10% chance of infection if vaccinated
+
+function isVac(vacRate) {
+	tmpRand = Math.random();
+	if(tmpRand<(vacRate)) return true
+		else return false;
+}
+
+function displayTable(populace) {
+	for(x=0;x<40;x++) {
+		for(y=0;y<10;y++) {
+			myCell = document.getElementById("cell"+y+"-"+x);
+            myCell.innerHTML = '0';
+			if(populace[x][y]) {
+				myCell.style.color = "green";
+                myCell.style.textDecoration='underline';
+			} else {
+				myCell.style.color = "red";
+                myCell.style.textDecoration='none';
+			}
+		}
+	}
+}
+
+function populate() {
+	var tmpRand,x,y;
+	var vacRateLeft = document.getElementById('Left').value;
+	var vacRateRight = document.getElementById('Right').value;
+	var populace = new Array(40)
+	for (i = 0; i < populace.length; ++ i)
+		populace[i] = new Array(10);
+	
+	for(x=0;x<20;x++) {
+		for(y=0;y<10;y++) {
+				populace[x][y] = isVac(vacRateLeft);
+		}
+	}
+
+	for(x=20;x<40;x++) {
+		for(y=0;y<10;y++) {
+				populace[x][y] = isVac(vacRateRight);
+		}
+	}
+	
+	 displayTable(populace);
+	 
+}
+
+function isVaccinated(x,y) {
+	myCell = document.getElementById("cell"+y+"-"+x)
+	if(myCell.style.color == "green") return true	// Since we're changing cell colors anyway, let's consider it storing the result
+		else return false;
+}
+
+function isInfected(x,y) {
+	myCell = document.getElementById("cell"+y+"-"+x)
+	if(myCell.style.color == "black") return true
+		else return false;
+}
+
+function infect(x,y) {
+	var startX,startY,endX,endY,chance,currentcell,currentcount;
+
+    myCell = document.getElementById("cell"+y+"-"+x)
+    myCell.style.color = "black";
+    
+    if(y==0) startY=0
+        else startY = parseInt(y) - 1;
+    if(x==0) startX=0
+        else startX = parseInt(x) - 1;
+    if(y==9) endY=9
+        else endY = parseInt(y) + 1;
+    if(x==39) endX=39
+        else endX = parseInt(x) + 1;
+
+    for(ix=startX;ix<=endX;ix++) {
+        for(iy=startY;iy<=endY;iy++) {
+            if(!isInfected(ix,iy)) {
+                if(isVaccinated(ix,iy)) chance = vacInfectionRate
+                    else chance = infectionRate;
+                //
+                currentcell = 'cell'+iy+'-'+ix
+                currentcount = parseInt(document.getElementById(currentcell).innerHTML)
+                currentcount++
+                document.getElementById(currentcell).innerHTML = currentcount+''
+                if(chance>Math.random()) setTimeout('infect('+ix+','+iy+')',500+(1000*Math.random())); //The recursive bit
+                
+            }
+        }
+    }
+}
+
+function infectThis(cellObj) {
+	var cellId = String(cellObj.id),x,y;
+	y = cellId.substring(4,cellId.indexOf('-'));
+	x = cellId.substring(cellId.indexOf('-')+1);
+	
+	infect(x,y); // Start the recursion
+}
+
+</script>
+<style type="text/css">
+<!--
+a {
+	cursor: crosshair;
+}
+-->
+</style>
+</head>
+<body onload="populate();" style="margin-top: 50px; background-color: #333;">
+<table border="0" id="Population" align="center">
+  <tbody><tr>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-0">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-1">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-2">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-3">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-4">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-5">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-6">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-7">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-8">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-9">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-10">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-11">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-12">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-13">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-14">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-15">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-16">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-17">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-18">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-19">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-20">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-21">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-22">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-23">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-24">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-25">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-26">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-27">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-28">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-29">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-30">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-31">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-32">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-33">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-34">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-35">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-36">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-37">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-38">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell0-39">0</a></td>
+  </tr>
+  <tr>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-0">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-1">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-2">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-3">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-4">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-5">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-6">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-7">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-8">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-9">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-10">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-11">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-12">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-13">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-14">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-15">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-16">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-17">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-18">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-19">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-20">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-21">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-22">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-23">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-24">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-25">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-26">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-27">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-28">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-29">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-30">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-31">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-32">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-33">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-34">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-35">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-36">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-37">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-38">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell1-39">0</a></td>
+  </tr>
+  <tr>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-0">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-1">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-2">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-3">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-4">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-5">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-6">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-7">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-8">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-9">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-10">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-11">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-12">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-13">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-14">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-15">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-16">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-17">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-18">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-19">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-20">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-21">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-22">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-23">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-24">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-25">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-26">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-27">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-28">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-29">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-30">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-31">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-32">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-33">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-34">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-35">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-36">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-37">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-38">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell2-39">0</a></td>
+  </tr>
+  <tr>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-0">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-1">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-2">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-3">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-4">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-5">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-6">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-7">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-8">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-9">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-10">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-11">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-12">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-13">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-14">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-15">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-16">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-17">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-18">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-19">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-20">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-21">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: green;" id="cell3-22">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-23">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-24">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-25">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-26">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-27">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-28">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-29">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-30">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-31">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-32">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-33">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-34">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-35">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-36">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-37">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-38">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell3-39">0</a></td>
+  </tr>
+  <tr>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-0">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-1">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-2">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-3">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-4">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-5">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-6">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-7">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-8">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-9">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-10">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-11">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-12">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-13">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-14">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-15">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-16">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-17">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-18">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-19">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-20">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-21">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-22">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-23">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-24">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-25">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-26">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-27">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-28">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-29">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-30">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-31">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-32">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-33">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-34">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-35">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-36">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-37">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-38">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell4-39">0</a></td>
+  </tr>
+  <tr>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-0">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-1">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-2">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-3">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-4">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-5">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-6">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-7">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-8">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-9">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-10">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-11">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-12">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-13">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-14">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-15">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: green;" id="cell5-16">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-17">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-18">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-19">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-20">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-21">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-22">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-23">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-24">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-25">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-26">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-27">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-28">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-29">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-30">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-31">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-32">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-33">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-34">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-35">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-36">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-37">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-38">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell5-39">0</a></td>
+  </tr>
+  <tr>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-0">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-1">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-2">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-3">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-4">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-5">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-6">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-7">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-8">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-9">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-10">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-11">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-12">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-13">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-14">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-15">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-16">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-17">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-18">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-19">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-20">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-21">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-22">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-23">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-24">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-25">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-26">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-27">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-28">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-29">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-30">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-31">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-32">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-33">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-34">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-35">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-36">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-37">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-38">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell6-39">0</a></td>
+  </tr>
+  <tr>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-0">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-1">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-2">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-3">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-4">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-5">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-6">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-7">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-8">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-9">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-10">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-11">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-12">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-13">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-14">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-15">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-16">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-17">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-18">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-19">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-20">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-21">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-22">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-23">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-24">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-25">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-26">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-27">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-28">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-29">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-30">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-31">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-32">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-33">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-34">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-35">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-36">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-37">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-38">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell7-39">0</a></td>
+  </tr>
+  <tr>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-0">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-1">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-2">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-3">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-4">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-5">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-6">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-7">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-8">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-9">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-10">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-11">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-12">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-13">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-14">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-15">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-16">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-17">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-18">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-19">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-20">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-21">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-22">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-23">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-24">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-25">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-26">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-27">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-28">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-29">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-30">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-31">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-32">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-33">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-34">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-35">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-36">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-37">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-38">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell8-39">0</a></td>
+  </tr>
+  <tr>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-0">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-1">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-2">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-3">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-4">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-5">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-6">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-7">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-8">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-9">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-10">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-11">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-12">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-13">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-14">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-15">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-16">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-17">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-18">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-19">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-20">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-21">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-22">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-23">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-24">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-25">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-26">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-27">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-28">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-29">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-30">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-31">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-32">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-33">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-34">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-35">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-36">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: green;" id="cell9-37">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-38">0</a></td>
+    <td><a onclick="infectThis(this);" style="color: black;" id="cell9-39">0</a></td>
+  </tr>
+  <tr>
+  	<td colspan="40" style="text-align: center;"><div style="color: #CCC;">Left side coverage: <input type="text" width="3" id="Left" value=".9" onchange="populate();"> Right side coverage: <input type="text" width="3" id="Right" value=".9" onchange="populate()"> <input type="submit" value="Repopulate" onclick="populate()"></div></td>
+  </tr>
+</tbody></table>
+<p style="text-align: center; color: #CCC;">Robert Webb has added features to and updated this simulation. You can find his version <a href="http://www.software3d.com/Home/Vax/Immunity.php" target="_blank">here</a>.</p><p style="text-align: center; font-weight: bold; font-size: 24px; color: #CCC;">How to use this page:<br>
+  <object width="640" height="385">
+    <param name="movie" value="http://www.youtube.com/v/f-cKzzPkz2o?fs=1&amp;hl=en_US&amp;rel=0">
+    <param name="allowFullScreen" value="true">
+    <param name="allowscriptaccess" value="always">
+    <embed src="http://www.youtube.com/v/f-cKzzPkz2o?fs=1&amp;hl=en_US&amp;rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="385">
+  </object>
+</p>
+
+
+</body></html>
