@@ -31,7 +31,8 @@ function displayTable(populace) {
 		for(y=0;y<10;y++) {
 			myCell = document.getElementById("cell"+y+"-"+x);
             myCell.innerHTML = '0';
-			if(populace[x][y]) {
+			myCell.style.backgroundColor='transparent';
+            if(populace[x][y]) {
 				myCell.style.color = "green";
                 myCell.style.textDecoration='underline';
 			} else {
@@ -78,7 +79,7 @@ function isInfected(x,y) {
 		else return false;
 }
 
-function infect(x,y) {
+function infect(x,y,click_flag) {
 	var startX,startY,endX,endY,chance,currentcount;
 
     // At this point we're just exposed to the infectious agent
@@ -86,9 +87,13 @@ function infect(x,y) {
     currentcount++;
     myCell.innerHTML = currentcount+'';
     if(!isInfected(x,y)) {
-        if(isVaccinated(x,y)) chance = vacInfectionRate
-            else chance = infectionRate;
-        
+        if(click_flag==true) {
+            chance = 1;
+        } else {
+            if(isVaccinated(x,y)) chance = vacInfectionRate
+                else chance = infectionRate;
+        }
+                
         if(chance>Math.random()) {
             // The infection got us, so we should try to spread it
             myCell = document.getElementById("cell"+y+"-"+x);
@@ -105,7 +110,7 @@ function infect(x,y) {
 
             for(ix=startX;ix<=endX;ix++) {
                 for(iy=startY;iy<=endY;iy++) {
-                    if (x!=ix || y!=iy) setTimeout('infect('+ix+','+iy+')',500+(1000*Math.random())); //The recursive bit
+                    if (x!=ix || y!=iy) setTimeout('infect('+ix+','+iy+',false)',500+(1000*Math.random())); //The recursive bit
                 }
             }
         }
@@ -117,7 +122,8 @@ function infectThis(cellObj) {
 	y = cellId.substring(4,cellId.indexOf('-'));
 	x = cellId.substring(cellId.indexOf('-')+1);
 	
-	infect(x,y); // Start the recursion
+	cellObj.style.backgroundColor = 'yellow';
+    infect(x,y,true); // Start the recursion
 }
 
 </script>
